@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import TodoItem from './TodoItem.js';
 import './App.css';
 
 class App extends Component {
@@ -7,15 +7,19 @@ class App extends Component {
     super(props);
 
     this.state = {
-      todos: [
-        'Learn React',
-        'Do Laundry'
-      ],
+      todos: [{
+        task: 'Learn React',
+        isCompleted: true
+      }, {
+        task: 'Do Laundry',
+        isCompleted: true
+      }],
       todoToAdd: ""
     };
     // This binding is necessary to make `this` work in the callback
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.handleToggleTodo= this.handleToggleTodo.bind(this);
   }
 
   handleChange(event) {
@@ -27,7 +31,10 @@ class App extends Component {
   }
 
   handleClick(event) {
-    const nextTodos = this.state.todos.concat(this.state.todoToAdd);
+    const nextTodos = this.state.todos.concat({
+    	task: this.state.todoToAdd,
+    	isCompleted: false,
+    });
     const nextTodoToAdd = '';
 
     this.setState({
@@ -36,18 +43,35 @@ class App extends Component {
     });
   }
 
+  handleToggleTodo(index, value) {
+    this.setState({
+      todos: this.state.todos.map((todo, idx) => {
+        if (idx === index) {
+          return Object.assign({}, todo, { isCompleted: value});
+        }
+
+        return todo;
+      })
+    })
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <p>
             Welcome to My TODO List
           </p>
           <ul>
-            {this.state.todos.map(
-              (todo,index) => <li key={index}>{todo}</li>
-            )}  
+            {this.state.todos.map((todo,index) => {
+            	return <TodoItem 
+	            	key={index}
+	            	isCompleted={todo.isCompleted}
+                index={index}
+                onToggleTodo={this.handleToggleTodo}>
+            		{todo.task}
+            	</TodoItem>
+            })}  
           </ul>
           <input
             type="text"
